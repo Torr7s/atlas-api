@@ -1,16 +1,27 @@
-import { User } from "../../model/User";
-import { IUsersRepository } from "../../repositories/IUsersRepository";
+import { UserModel } from '../../model/UserModel';
+
+import { IUsersRepository } from '../../repositories/IUsersRepository';
 
 interface IRequest {
   user_id: string;
 }
 
 class ShowUserProfileUseCase {
-  constructor(private usersRepository: IUsersRepository) {}
+  constructor(
+    private _usersRepository: IUsersRepository
+  ) {}
 
-  execute({ user_id }: IRequest): User {
-    // Complete aqui
+  perform({ user_id }: IRequest): UserModel {
+    const userData = this._usersRepository.findById(user_id)
+
+    if (!userData) {
+      throw new Error(
+        'User does not exists!'
+      )
+    }
+
+    return userData
   }
 }
 
-export { ShowUserProfileUseCase };
+export { ShowUserProfileUseCase }

@@ -1,42 +1,64 @@
-import { User } from "../../model/User";
-import { IUsersRepository, ICreateUserDTO } from "../IUsersRepository";
+import { v4 as uuid } from 'uuid';
+
+import { UserModel } from '../../model/UserModel';
+
+import { IUsersRepository, ICreateUserDTO } from '../IUsersRepository';
 
 class UsersRepository implements IUsersRepository {
-  private users: User[];
-
-  private static INSTANCE: UsersRepository;
+  private _users: UserModel[]
+  private static _instance: UsersRepository
 
   private constructor() {
-    this.users = [];
+    this._users = []
   }
 
   public static getInstance(): UsersRepository {
-    if (!UsersRepository.INSTANCE) {
-      UsersRepository.INSTANCE = new UsersRepository();
+    if (!UsersRepository._instance) {
+      UsersRepository._instance = new UsersRepository()
     }
 
-    return UsersRepository.INSTANCE;
+    return UsersRepository._instance
   }
 
-  create({ name, email }: ICreateUserDTO): User {
-    // Complete aqui
+  create({ name, email }: ICreateUserDTO): UserModel {
+    const user = new UserModel()
+
+    Object.assign(user, { 
+      id: uuid(),
+      name, 
+      email,
+      admin: false,
+      created_at: new Date(),
+      updated_at: new Date()
+    })
+
+    this._users.push(user)
+
+    return user
   }
 
-  findById(id: string): User | undefined {
-    // Complete aqui
+  findById(id: string): UserModel | undefined {
+    const user = this._users.find((user) => user.id === id)
+
+    return user
   }
 
-  findByEmail(email: string): User | undefined {
-    // Complete aqui
+  findByEmail(email: string): UserModel | undefined {
+    const user = this._users.find((user) => user.email === email)
+    
+    return user
   }
 
-  turnAdmin(receivedUser: User): User {
-    // Complete aqui
+  turnAdmin(receivedUser: UserModel): UserModel {  
+    receivedUser.admin = true
+    receivedUser.updated_at = new Date()
+
+    return receivedUser
   }
 
-  list(): User[] {
-    // Complete aqui
+  list(): UserModel[] {
+    return this._users
   }
 }
 
-export { UsersRepository };
+export { UsersRepository }
